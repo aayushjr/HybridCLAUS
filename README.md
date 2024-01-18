@@ -1,15 +1,14 @@
-# Are All Frames Equal? Active Sparse Labeling for Video Action Detection
+# Hybrid Active Learning via Deep Clustering for Video Action Detection
 
-Video action detection requires annotations at every frame, which drastically increases the labeling cost. In this work, we focus on efficient labeling of videos for
-action detection to minimize this cost. We propose active sparse labeling (ASL), a novel active learning strategy for video action detection.   
+Per frame annotation of labels for video action detection is an expensive task that increases labeling cost as the dataset increases. In this work, we expand on prior work and focus on hybrid labeling approach - rank videos and select sparse (high utility) frames from those videos using active learning to minimize labeling cost. We propose Clustering-Aware Uncertainty Scoring (CLAUS) approach, a novel hybrid active learning strategy for labeling data to be used in video action detection task.   
 
 ## Project page
 
-Visit the project page [HERE](https://sites.google.com/view/activesparselabeling/home) for more details.
+Visit the project page [HERE](https://sites.google.com/view/activesparselabeling/home/claus) for more details.
 
 ## Description
 
-This is an implementation for the NeurIPS 2022 paper titled: Are All Frames Equal? Active Sparse Labeling for Video Action Detection. 
+This is an implementation for the CVPR 2023 paper titled: Hybrid Active Learning via Deep Clustering for Video Action Detection. 
 
 ## Pre-requisites
 - python >= 3.6
@@ -28,21 +27,26 @@ We suggest to clone our anaconda environment using the following code:
 
 ## Folder structure
 
-The code expects UCF101 dataset in data/UCF101 folder (same format as direct download from source).
+The code expects UCF101 dataset in Datasets/UCF101 directory (same format as direct download from source).
 
-To use pretrained weights, please download charades pretrained i3d weights into weights folder from given link: [https://github.com/piergiaj/pytorch-i3d/blob/master/models/rgb_charades.pt](https://github.com/piergiaj/pytorch-i3d/blob/master/models/rgb_charades.pt)
+To use pretrained weights, please download charades pretrained i3d weights into weights directory from given link: [https://github.com/piergiaj/pytorch-i3d/blob/master/models/rgb_charades.pt](https://github.com/piergiaj/pytorch-i3d/blob/master/models/rgb_charades.pt)
 
-The trained models will be saved under `trained/active_learning/checkpoints_ucf101_capsules_i3d` folder 
+The trained models will be saved under `trained/active_learning/checkpoints_ucf101_capsules_i3d` directory. 
+
+Saved auxilliary files will be inside `files` directory.
 
 The labels/annotations for ucf101 is saved as pickle files for easier processing. 
 
 
 ## Training step
 
-To train, place the data and weights in appropriate folder. Then run as  
+To train, place the data and weights in appropriate folder. Then follow these:  
     `python3 train_ucf101_capsules.py <percent>`
 
-## APU step 
+1. Run `ucf101_cluster.py` to train model for current annotation set.
 
-This will use the APU algorithm to select frames and create new annotation pickle file. Run as:   
-`python3 APU.py`
+2. Once trained, get the final model file name and put that in `cluster_extract.py` and `ucf101_CLAUS.py` and save the files.
+
+3. Run `cluster_extract.py` first. This will save the cluster values for the entire training set.
+
+4. Run `ucf101_CAU.py` after that. This will score each video using cluster and proximity and select videos and frames for annotation.
